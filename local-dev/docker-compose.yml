@@ -1,0 +1,19 @@
+services:
+  # ─── Grafana Alloy ──────────────────────────────────────────
+  # Recibe OTLP de la app y reenvía a Grafana Cloud.
+  # Requiere un archivo local-dev/.env con las credenciales:
+  #   GRAFANA_OTLP_ENDPOINT, GRAFANA_INSTANCE_ID, GRAFANA_API_KEY
+  # Copiar local-dev/.env.example → local-dev/.env y completar.
+  alloy:
+    image: grafana/alloy:latest
+    container_name: local-alloy
+    ports:
+      - "4317:4317"    # OTLP gRPC
+      - "4318:4318"    # OTLP HTTP
+      - "12345:12345"  # Alloy UI — http://localhost:12345
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+    env_file:
+      - .env
+    command: run --server.http.listen-addr=0.0.0.0:12345 /etc/alloy/config.alloy
+    restart: unless-stopped

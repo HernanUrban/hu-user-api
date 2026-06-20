@@ -1,3 +1,7 @@
+
+/target
+
+
 # Compiled class file
 *.class
 
@@ -22,3 +26,43 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+/public/build
+/storage/pail
+.env.backup
+.env.production
+.env
+auth.json
+
+
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitkeep
+/storage/
+
+# macOS
+.DS_Store
+
+.gradle
+build/
+target/
+
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+.jqwik-database
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+### VS Code ###
+.vscode/
+
+postgres-data
+/dependencies/

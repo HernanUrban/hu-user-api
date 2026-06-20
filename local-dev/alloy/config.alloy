@@ -1,0 +1,44 @@
+// ============================================================
+// Grafana Alloy — configuración local para desarrollo
+// Recibe OTLP de la app PHP y reenvía a Grafana Cloud
+// ============================================================
+
+// Receptor OTLP: acepta tráfico de la app Laravel
+otelcol.receiver.otlp "default" {
+    grpc {
+        endpoint = "0.0.0.0:4317"
+    }
+    http {
+        endpoint = "0.0.0.0:4318"
+    }
+
+    output {
+        traces  = [otelcol.processor.batch.default.input]
+        metrics = [otelcol.processor.batch.default.input]
+        logs    = [otelcol.processor.batch.default.input]
+    }
+}
+
+// Batch processor: agrupa telemetría antes de exportar
+otelcol.processor.batch "default" {
+    timeout         = "5s"
+    send_batch_size = 256
+
+    output {
+        traces  = [otelcol.exporter.otlphttp.grafana_cloud.input]
+        metrics = [otelcol.exporter.otlphttp.grafana_cloud.input]
+        logs    = [otelcol.exporter.otlphttp.grafana_cloud.input]
+    }
+}
+
+// Exportador OTLP HTTP hacia Grafana Cloud
+// Usa el header Authorization que Grafana Cloud provee directamente.
+otelcol.exporter.otlphttp "grafana_cloud" {
+    client {
+        endpoint = env("GRAFANA_CLOUD_OTLP_ENDPOINT")
+
+        headers = {
+            "Authorization" = env("GRAFANA_CLOUD_OTLP_AUTH_HEADER"),
+        }
+    }
+}
