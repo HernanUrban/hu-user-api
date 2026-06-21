@@ -1,6 +1,12 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /user
 spring:
   application:
-    name: hu-user-api
+    name: ${OTEL_SERVICE_NAME:hu-user-api}
+  profiles:
+    active: ${ENVIRONMENT:default}
   datasource:
     url: jdbc:h2:mem:userdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
@@ -16,30 +22,20 @@ spring:
       enabled: true
       path: /h2-console
 
-server:
-  port: 8080
-
-
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-      base-path: /user/actuator
   opentelemetry:
-    resource-attributes:
-      "service.name": ${spring.application.name}
-      "deployment.environment": ${ENVIRONMENT:local}
-  otlp:
-    http:
-      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/traces
+    logging:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/logs
     tracing:
-      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/traces
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/traces
+  otlp:
     metrics:
       export:
         url: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/metrics
-    logging:
-      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/logs
   tracing:
     sampling:
       probability: 1.0
